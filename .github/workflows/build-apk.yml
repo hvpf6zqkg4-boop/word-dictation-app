@@ -26,8 +26,8 @@ jobs:
       # 3. 赋予gradlew执行权限并开始编译Debug APK
       - name: 构建APK
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          chmod +x gradle
+          ./gradle assembleDebug
 
       # 4. 上传编译好的APK作为工作流产物
       - name: 上传APK
