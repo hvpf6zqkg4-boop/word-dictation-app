@@ -7,15 +7,12 @@ on:
     branches: [ main ]
   workflow_dispatch:  # 允许手动触发
 
-permissions:
-  contents: write  # 允许创建Release
-
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v4
       
     - name: Set up JDK 17
@@ -25,62 +22,53 @@ jobs:
         distribution: 'temurin'
         
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: actions/setup-android@v3
       with:
         api-level: 34
         build-tools: 34.0.0
-        ndk: 25.2.9519653
-        cmake: 3.22.1
+        ndk-version: '25.2.9519653'
         
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
-    - name: Build with Gradle
-      run: |
-        ./gradlew assembleDebug --stacktrace
-        ./gradlew assembleRelease --stacktrace
-        
-    - name: Upload debug APK
+    - name: Validate Gradle wrapper
+      run: ./gradlew --version
+      
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace --info
+      
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
+        name: word-dictation-app
         path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 7
         
-    - name: Upload release APK
-      uses: actions/upload-artifact@v4
+    - name: Create Release
+      if: github.event_name == 'workflow_dispatch'
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: app-release
-        path: app/build/outputs/apk/release/app-release-unsigned.apk
-        
-    - name: Create GitHub Release
-      if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: |
-          app/build/outputs/apk/debug/app-debug.apk
-          app/build/outputs/apk/release/app-release-unsigned.apk
-        tag: v1.0.${{ github.run_number }}
-        name: Release v1.0.${{ github.run_number }}
+        files: app/build/outputs/apk/debug/app-debug.apk
+        tag_name: v1.0.0
+        name: 词语听写小助手 v1.0.0
         body: |
-          # 词语听写小助手 v1.0.${{ github.run_number }}
+          # 词语听写小助手
           
-          ## 📱 应用功能
-          - 拍照识别词语
-          - 语音朗读词语
-          - 可调节朗读间隔
-          - 完全免费离线使用
+          ## 功能特点
+          - 📸 拍照识别词语
+          - 🔊 语音朗读词语
+          - ⏱️ 可调节朗读间隔
+          - 🆓 完全免费离线使用
           
-          ## 📦 包含文件
-          1. **app-debug.apk** - 调试版（可直接安装）
-          2. **app-release-unsigned.apk** - 发布版（需要签名）
-          
-          ## 🔧 安装说明
-          1. 下载 **app-debug.apk**
+          ## 安装说明
+          1. 下载此APK文件
           2. 在Android手机上安装
           3. 授予必要权限
           4. 开始使用
-          
-          ## 📞 技术支持
-          如有问题，请提交Issue
         draft: false
         prerelease: false
