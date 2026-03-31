@@ -17,11 +17,11 @@ jobs:
         uses: actions/checkout@v4
 
       # 2. 配置Java环境 (Android编译需要)
-      - name: 设置JDK 17
+      - name: 设置JDK 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
       # 3. 赋予gradlew执行权限并开始编译Debug APK
       - name: 构建APK
