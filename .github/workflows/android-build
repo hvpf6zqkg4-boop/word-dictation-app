@@ -1,0 +1,88 @@
+name: Android Build
+
+on:
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      run: |
+        # 下载Android命令行工具
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+        mkdir -p android-sdk
+        unzip -q cmdline-tools.zip -d android-sdk
+        mv android-sdk/cmdline-tools android-sdk/latest
+        
+        # 设置环境变量
+        echo "ANDROID_HOME=$PWD/android-sdk" >> $GITHUB_ENV
+        echo "PATH=$PWD/android-sdk/latest/bin:$PATH" >> $GITHUB_ENV
+        
+        # 接受所有许可证
+        yes | sdkmanager --licenses || true
+        
+        # 安装必要的Android组件
+        sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        sdkmanager --update
+        
+    - name: Verify Android SDK
+      run: |
+        echo "ANDROID_HOME: $ANDROID_HOME"
+        ls -la $ANDROID_HOME
+        sdkmanager --list
+        
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
+    - name: Build APK
+      run: |
+        ./gradlew assembleDebug --stacktrace
+        
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: word-dictation-app
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+        
+    - name: Create GitHub Release
+      if: success()
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: app/build/outputs/apk/debug/app-debug.apk
+        tag_name: v1.0.0
+        name: 词语听写小助手 v1.0.0
+        body: |
+          # 词语听写小助手
+          
+          ## 🎯 功能特点
+          - 📸 拍照识别词语
+          - 🔊 语音朗读词语  
+          - ⏱️ 可调节朗读间隔
+          - 🆓 完全免费离线使用
+          
+          ## 📱 安装说明
+          1. 下载此APK文件
+          2. 在Android手机上安装
+          3. 授予必要权限
+          4. 开始使用
+          
+          ## 🔧 系统要求
+          - Android 7.0 或更高版本
+          - 后置摄像头（用于拍照）
+          - 支持中文TTS语音
+        draft: false
+        prerelease: false
