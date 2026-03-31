@@ -1,11 +1,7 @@
-name: Android Build
+name: Build Android APK
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,60 +11,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Set up JDK 17
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'temurin'
         
-    - name: Setup Android SDK
-      uses: actions/setup-android@v3
-      with:
-        api-level: 34
-        build-tools: 34.0.0
-        ndk-version: '25.2.9519653'
+    - name: Install Android SDK
+      run: |
+        # 安装Android SDK命令行工具
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip -q commandlinetools-linux-9477386_latest.zip -d android-sdk
+        export ANDROID_HOME=$PWD/android-sdk
+        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
         
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-      
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-      
-    - name: Validate Gradle wrapper
-      run: ./gradlew --version
-      
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace --info
-      
+        # 安装必要的Android组件
+        yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        
+    - name: Build APK
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleDebug
+        
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: word-dictation-app
+        name: app-apk
         path: app/build/outputs/apk/debug/app-debug.apk
-        retention-days: 7
-        
-    - name: Create Release
-      if: github.event_name == 'workflow_dispatch'
-      uses: softprops/action-gh-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: app/build/outputs/apk/debug/app-debug.apk
-        tag_name: v1.0.0
-        name: 词语听写小助手 v1.0.0
-        body: |
-          # 词语听写小助手
-          
-          ## 功能特点
-          - 📸 拍照识别词语
-          - 🔊 语音朗读词语
-          - ⏱️ 可调节朗读间隔
-          - 🆓 完全免费离线使用
-          
-          ## 安装说明
-          1. 下载此APK文件
-          2. 在Android手机上安装
-          3. 授予必要权限
-          4. 开始使用
-        draft: false
-        prerelease: false
