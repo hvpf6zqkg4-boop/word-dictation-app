@@ -1,36 +1,71 @@
 # 文件名: .github/workflows/build-apk.yml
-name: 自动构建Android APK
+name: 自动构建WordDictationApp APK
 
-# 触发条件: 当你向 main 分支推送代码时自动运行
 on:
   push:
-    branches: [ main ]
-  # 添加手动触发按钮，方便随时编译
-  workflow_dispatch:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-      # 1. 拉取你的仓库代码
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      # 2. 配置Java环境 (Android编译需要)
-      - name: 设置JDK 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-
-      # 3. 赋予gradlew执行权限并开始编译Debug APK
-      - name: 构建APK
-        run: |
-          # 如果没有gradlew，直接使用gradle命令
-          gradle assembleDebug
-      # 4. 上传编译好的APK作为工作流产物
-      - name: 上传APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: 设置Gradle
+      uses: gradle/actions/setup-gradle@v3
+      
+    - name: 生成Gradle Wrapper（如果没有）
+      run: |
+        if [ ! -f "gradlew" ]; then
+          echo "未找到gradlew，正在生成..."
+          gradle wrapper
+        fi
+        chmod +x gradlew
+        
+    - name: 查看项目结构（调试用）
+      run: |
+        echo "=== 项目根目录内容 ==="
+        ls -la
+        echo "=== 检查gradle目录 ==="
+        ls -la gradle/wrapper/ 2>/dev/null || echo "gradle/wrapper目录不存在"
+        
+    - name: 构建Debug APK
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleDebug --stacktrace
+        
+    - name: 构建Release APK（可选）
+      run: |
+        ./gradlew assembleRelease --stacktrace
+        
+    - name: 查找生成的APK
+      run: |
+        echo "=== Debug APK ==="
+        find app/build/outputs/apk/debug -name "*.apk" 2>/dev/null || echo "Debug APK未找到"
+        echo "=== Release APK ==="
+        find app/build/outputs/apk/release -name "*.apk" 2>/dev/null || echo "Release APK未找到"
+        
+    - name: 上传Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: WordDictationApp-debug
+        path: app/build/outputs/apk/debug/*.apk
+        if-no-files-found: warn
+        
+    - name: 上传Release APK（如果存在）
+      uses: actions/upload-artifact@v4
+      with:
+        name: WordDictationApp-release
+        path: app/build/outputs/apk/release/*.apk
+        if-no-files-found: ignore
