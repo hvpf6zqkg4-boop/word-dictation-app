@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 主色调 - 柔和适合儿童 -->
+    <color name="primary">#4CAF50</color>
+    <color name="primary_variant">#388E3C</color>
+    <color name="secondary">#2196F3</color>
+    <color name="secondary_variant">#1976D2</color>
+    
+    <!-- 背景色 -->
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    
+    <!-- 文字颜色 -->
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="on_background">#212121</color>
+    <color name="on_surface">#212121</color>
+    
+    <!-- 功能色 -->
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="info">#2196F3</color>
+    
+    <!-- 按钮颜色 -->
+    <color name="button_start">#4CAF50</color>
+    <color name="button_pause">#FF9800</color>
+    <color name="button_stop">#F44336</color>
+    <color name="button_neutral">#9E9E9E</color>
+    
+    <!-- 卡片颜色 -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_shadow">#1F000000</color>
+    
+    <!-- 进度条 -->
+    <color name="progress_background">#E0E0E0</color>
+    <color name="progress_foreground">#4CAF50</color>
+    
+    <!-- 当前词语高亮 -->
+    <color name="current_word_highlight">#E8F5E8</color>
+    <color name="word_normal">#424242</color>
+</resources>

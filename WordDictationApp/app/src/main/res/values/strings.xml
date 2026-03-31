@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">词语听写小助手</string>
+    
+    <!-- 主界面 -->
+    <string name="select_image">选择图片</string>
+    <string name="take_photo">拍照</string>
+    <string name="choose_from_gallery">从相册选择</string>
+    <string name="recognized_words">已识别词语</string>
+    <string name="current_word">当前朗读</string>
+    <string name="interval_setting">朗读间隔</string>
+    <string name="seconds">秒</string>
+    <string name="start">开始</string>
+    <string name="pause">暂停</string>
+    <string name="resume">继续</string>
+    <string name="stop">停止</string>
+    <string name="progress_format">第%d个/共%d个</string>
+    <string name="no_words">请先选择图片识别词语</string>
+    <string name="reading_complete">朗读完成！</string>
+    <string name="reading_paused">朗读已暂停</string>
+    <string name="reading_stopped">朗读已停止</string>
+    
+    <!-- 权限相关 -->
+    <string name="camera_permission_required">需要相机权限才能拍照</string>
+    <string name="storage_permission_required">需要存储权限才能选择图片</string>
+    <string name="permission_denied">权限被拒绝，部分功能无法使用</string>
+    <string name="go_to_settings">去设置</string>
+    <string name="cancel">取消</string>
+    
+    <!-- OCR相关 -->
+    <string name="recognizing">正在识别图片中的词语…</string>
+    <string name="recognition_success">识别成功！找到%d个词语</string>
+    <string name="recognition_failed">识别失败，请重试</string>
+    <string name="no_text_found">未识别到文字</string>
+    
+    <!-- TTS相关 -->
+    <string name="tts_initializing">正在初始化语音引擎…</string>
+    <string name="tts_ready">语音引擎准备就绪</string>
+    <string name="tts_error">语音引擎初始化失败</string>
+    <string name="tts_language_not_supported">当前设备不支持中文语音</string>
+    <string name="download_voice_pack">需要下载中文语音包</string>
+    
+    <!-- 错误提示 -->
+    <string name="error_no_image">请先选择图片</string>
+    <string name="error_no_words">没有可朗读的词语</string>
+    <string name="error_tts_not_ready">语音引擎未就绪</string>
+    
+    <!-- 设置 -->
+    <string name="settings">设置</string>
+    <string name="interval_min">最小间隔</string>
+    <string name="interval_max">最大间隔</string>
+    <string name="interval_step">间隔步长</string>
+    
+    <!-- 对话框 -->
+    <string name="confirm">确定</string>
+    <string name="ok">好的</string>
+    <string name="retry">重试</string>
+</resources>
